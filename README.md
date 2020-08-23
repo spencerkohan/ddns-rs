@@ -71,6 +71,20 @@ $ ddns update
 
 This will fetch the current ipv4 and ipv6 addresses for the current machine, and create A and AAAA records respectively on cloudflare.
 
+You can verify that this worked using the `dig` command:
+
+Show A records:
+```
+dig <domain> A @8.8.8.8
+```
+
+Show AAAA records:
+```
+dig <domain> AAAA @8.8.8.8
+```
+
+If everything worked corrctly, you should see the DNS records pointing to your current domain.
+
 ## Running as a service
 
 DDNS also contains a command to automate setting it up as a systemd service to run at startup.  This will mean the DNS records will automatically be updated if the IP address changes between sessions.
