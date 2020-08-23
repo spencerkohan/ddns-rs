@@ -13,6 +13,7 @@ use std::io::Read;
 
 mod dns;
 mod cloudflare;
+mod systemd;
 
 use dns::*;
 
@@ -50,7 +51,15 @@ enum DDNS {
     Ip {
         #[structopt(short, long, default_value = "v6")]
         version: IPV
-    }
+    },
+    /// Install a systemd configuration for ddns and run at startup
+    Activate {
+        /// The user to run ddns as
+        #[structopt(short, long)]
+        user: String
+    },
+    /// Deactivate the ddns systemd srvice config and delete it
+    Deactivate
 }
 
 #[derive(Debug, StructOpt)]
@@ -168,7 +177,14 @@ fn main() {
             },
             DDNS::Ip { version } => {
                 println!("Current IP: {} {}", &version.dns_record_type(), get_current_ip(&version).unwrap_or("".to_string()));
+            },
+            DDNS::Activate { user } => {
+                systemd::create_service(user);
+            },
+            DDNS::Deactivate => {
+                systemd::remove_service();
             }
+
         }
 
     } else {
